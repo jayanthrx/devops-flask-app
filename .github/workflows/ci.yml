@@ -1,10 +1,10 @@
-name: Flask CI
+name: Flask CI/CD
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   test:
@@ -27,3 +27,7 @@ jobs:
       - name: Test Flask application
         run: |
           python -c "from app import app; print('Flask application test passed!')"
+
+      - name: Build Docker image
+        run: |
+          docker build -t devops-flask-app .

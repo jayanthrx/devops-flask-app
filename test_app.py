@@ -22,6 +22,12 @@ class AppTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get_data(as_text=True), "Application is healthy!")
 
+    def test_metrics_endpoint(self):
+        response = self.client.get("/metrics")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("flask_http_request_duration_seconds", response.get_data(as_text=True))
+
 
 if __name__ == "__main__":
     unittest.main()

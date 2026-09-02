@@ -9,4 +9,9 @@ ENV/
 .git
 .gitignore
 .github
+.coverage
+terraform/
+monitoring/
+render.yaml
 README.md
+

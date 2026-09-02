@@ -3,19 +3,22 @@
 [![Flask CI/CD](https://github.com/jayanthrx/devops-flask-app/actions/workflows/ci.yml/badge.svg)](https://github.com/jayanthrx/devops-flask-app/actions/workflows/ci.yml)
 [![Docker Image](https://img.shields.io/badge/docker-ready-blue.svg)](https://hub.docker.com/r/jayanthrx/devops-flask-app)
 [![Python 3.11](https://img.shields.io/badge/python-3.11-brightgreen.svg)](https://www.python.org/)
+[![Coverage](https://img.shields.io/badge/coverage-97%25-brightgreen.svg)](https://github.com/jayanthrx/devops-flask-app)
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com)
 
-A comprehensive, production-grade DevOps repository showcasing end-to-end continuous integration, continuous delivery (CI/CD), infrastructure as code (Terraform), container orchestration (Docker Compose & Kubernetes), Helm packaging, and full observability (Prometheus & Grafana).
+A comprehensive, production-grade DevOps repository showcasing end-to-end continuous integration, continuous delivery (CI/CD), infrastructure as code (Terraform), multi-container orchestration with PostgreSQL (Docker Compose & Kubernetes), Helm packaging, and full observability (Prometheus & Grafana).
+
+> 💡 **Preparing for Interviews?** Check out the [**DevOps Portfolio & Interview Guide**](PORTFOLIO_GUIDE.md) for resume bullet points and architectural Q&A.
 
 ---
 
 ## 📋 Architecture & Tech Stack
 
-- **Application**: Python 3.11, Flask, Gunicorn WSGI Server (multi-worker)
+- **Application & WSGI**: Python 3.11, Flask, Gunicorn (multi-worker)
+- **Database**: PostgreSQL 15 (Docker) / SQLAlchemy ORM
 - **Observability**: `prometheus-flask-exporter`, Prometheus, Grafana (Dashboard-as-Code)
-- **Code Quality & Linting**: `flake8`, `coverage.py`
-- **Testing**: `unittest`
-- **Security Scanning**: Aqua Security `Trivy` (vulnerability scanner)
+- **Code Quality & Testing**: `flake8`, `coverage.py` (97% coverage), `unittest`
+- **Security Scanning**: Aqua Security `Trivy` (container vulnerability scanner)
 - **Containerization**: Docker, Docker Compose
 - **CI/CD Pipeline**: GitHub Actions (Lint $\rightarrow$ Test & Coverage $\rightarrow$ Build $\rightarrow$ Trivy Scan $\rightarrow$ Push $\rightarrow$ Deploy)
 - **Registry**: Docker Hub (`jayanthrx/devops-flask-app`)
@@ -32,6 +35,9 @@ A comprehensive, production-grade DevOps repository showcasing end-to-end contin
 | `/` | `GET` | Application welcome message |
 | `/health` | `GET` | Health check probe endpoint (status 200) |
 | `/metrics` | `GET` | Prometheus metrics (request count, latency, error rates) |
+| `/api/items` | `GET` | Retrieve all items from PostgreSQL database |
+| `/api/items` | `POST` | Create a new item (`{"title": "My Task"}`) |
+| `/api/items/<id>` | `DELETE` | Delete an item by ID |
 
 ---
 
@@ -60,14 +66,15 @@ App will be running at `http://localhost:5000`.
 
 ---
 
-### 2. Run Full Observability Stack with Docker Compose
-Spin up the Flask app, Prometheus, and Grafana simultaneously with pre-provisioned dashboards:
+### 2. Run Full Multi-Container Stack with Docker Compose
+Spin up the Flask app, PostgreSQL, Prometheus, and Grafana simultaneously:
 ```bash
 docker compose up -d --build
 ```
 
 **Services Available:**
-- 🌐 **Flask App**: [http://localhost:5000](http://localhost:5000)
+- 🌐 **Flask App & REST API**: [http://localhost:5000](http://localhost:5000)
+- 🗄️ **PostgreSQL Database**: `localhost:5432` (`flask_db`)
 - 🔥 **Prometheus UI**: [http://localhost:9090](http://localhost:9090)
 - 📊 **Grafana Dashboard**: [http://localhost:3000](http://localhost:3000) *(User: `admin`, Pass: `admin`)*
   - Pre-loaded with the **Flask Application Dashboard** (Total Requests, Rates, p95/p99 Latencies).
@@ -83,12 +90,12 @@ docker compose down
 
 On every `push` to `main`, the workflow (`.github/workflows/ci.yml`):
 1. **Linting**: Enforces clean Python style and syntax via `flake8`.
-2. **Testing & Coverage**: Runs test suite and calculates coverage with `coverage.py`.
+2. **Testing & Coverage**: Runs 8 test cases with `coverage.py` (**97% coverage**).
 3. **Docker Hub Login**: Securely authenticates via repository secrets (`DOCKERHUB_JAY` and `DOCKER_PASSWORD`).
 4. **Container Build**: Builds Docker container with Gunicorn WSGI.
 5. **Security Scan**: Aqua Security `Trivy` scans the image for vulnerabilities.
 6. **Docker Push**: Pushes image to Docker Hub as `latest`.
-7. **Continuous Deployment**: Triggers deployment notification and validation.
+7. **Continuous Deployment**: Triggers deployment verification.
 
 ---
 

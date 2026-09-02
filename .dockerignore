@@ -14,4 +14,7 @@ terraform/
 monitoring/
 render.yaml
 README.md
+instance/
+*.db
+PORTFOLIO_GUIDE.md
 

@@ -1,6 +1,24 @@
 version: '3.8'
 
 services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: devops_postgres
+    environment:
+      POSTGRES_DB: flask_db
+      POSTGRES_USER: flask_user
+      POSTGRES_PASSWORD: flask_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U flask_user -d flask_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
   flask-app:
     build:
       context: .
@@ -11,6 +29,10 @@ services:
       - "5000:5000"
     environment:
       - FLASK_ENV=production
+      - DATABASE_URL=postgresql://flask_user:flask_password@postgres:5432/flask_db
+    depends_on:
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
 
   prometheus:
@@ -38,5 +60,9 @@ services:
     depends_on:
       - prometheus
     restart: unless-stopped
+
+volumes:
+  postgres_data:
+
 
 
